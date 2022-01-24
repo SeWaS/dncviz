@@ -2,7 +2,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import process from 'process';
-import { DgFile } from './types';
+import { DgFile, DgProjectRestoreFrameworks } from './types';
 
 if (process.argv.length < 4) {
     console.log('Missing arguments');
@@ -11,7 +11,8 @@ if (process.argv.length < 4) {
 
 const DG_FILE = process.argv[2]!;
 const DOT_FILE = process.argv[3]!;
-const FILTER = process.argv.length > 4 ? process.argv[4] : undefined;
+const DOT_VERSION = process.argv[4]!;
+const FILTER = process.argv.length > 5 ? process.argv[5] : undefined;
 
 function shorten(path: string) {
     const result = extractFilename(path)
@@ -25,7 +26,7 @@ function extractFilename(file: string): string {
     return path.parse(file).base;
 }
 
-function generate(dgFile: string, dotFile: string, blacklist?: string) {
+function generate(dgFile: string, dotFile: string, dotVersion: string, blacklist?: string) {
 
     if (!fs.existsSync(dgFile)) {
         console.log(`${dgFile} does not exist`);
@@ -44,12 +45,20 @@ function generate(dgFile: string, dotFile: string, blacklist?: string) {
             return new RegExp(blacklist).test(x) === false;
         })
 
+    const dotVer = dotVersion as keyof DgProjectRestoreFrameworks;
+
     writeln('digraph dependencies {');
 
     projects.forEach(projectPath => {
         const project = json.projects[projectPath]!;
+        const framework = project.restore.frameworks[dotVer];
 
-        Object.keys(project.restore.frameworks['net6.0'].projectReferences)
+        if (framework == null) {
+            console.log(`Invalid dotnet framework version: "${dotVersion}"`);
+            process.exit(1);
+        }
+
+        Object.keys(framework.projectReferences)
             .forEach(referencePath => {
                 writeln(`  ${shorten(projectPath)} -> ${shorten(referencePath)}`);
             })
@@ -61,4 +70,4 @@ function generate(dgFile: string, dotFile: string, blacklist?: string) {
     console.log(`${dotFile} written`);
 }
 
-generate(DG_FILE, DOT_FILE, FILTER);
+generate(DG_FILE, DOT_FILE, DOT_VERSION, FILTER);

@@ -17,6 +17,13 @@ if [[ -z "$SLN_FILE" ]]; then
     exit 1
 fi
 
+DOT_VERSION="${2:-}"
+
+if [[ -z "$DOT_VERSION" ]]; then
+    echo "Please specify the dotnet version ('netcoreapp3.1' | 'net6.0')"
+    exit 1
+fi
+
 if [[ ! -f "$SLN_FILE" ]]; then
     echo "$SLN_FILE does not exist"
     exit 1
@@ -26,8 +33,8 @@ echo "Generating dependency graph"
 dotnet msbuild /t:GenerateRestoreGraphFile /p:RestoreGraphOutputPath="$DG_FILE" "$SLN_FILE"
 
 echo "Transforming to DOT syntax"
-yarn start "$DG_FILE" "out/with_test.dot"
-yarn start "$DG_FILE" "out/without_test.dot" "\\.Test"
+yarn start "$DG_FILE" "out/with_test.dot" "$DOT_VERSION"
+yarn start "$DG_FILE" "out/without_test.dot" "$DOT_VERSION" "\\.Test"
 
 echo "Invoking graphviz"
 dot -Tpng -Kdot out/with_test.dot -o out/output_with_test.png

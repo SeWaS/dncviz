@@ -15,6 +15,6 @@ brew install graphviz
 yarn
 
 # Execute
-./generate.sh ../../path/to/your.sln
+./generate.sh ../../path/to/your.sln [netcoreapp3.1 | net6.0]
 
 # Results are in ./out
