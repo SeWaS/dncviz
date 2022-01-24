@@ -49,7 +49,7 @@ function generate(dgFile: string, dotFile: string, blacklist?: string) {
     projects.forEach(projectPath => {
         const project = json.projects[projectPath]!;
 
-        Object.keys(project.restore.frameworks['netcoreapp3.1'].projectReferences)
+        Object.keys(project.restore.frameworks['net6.0'].projectReferences)
             .forEach(referencePath => {
                 writeln(`  ${shorten(projectPath)} -> ${shorten(referencePath)}`);
             })

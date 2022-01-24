@@ -21,6 +21,7 @@ export type DgFramework = {
 
 export type DgFrameworks = {
     "netcoreapp3.1": DgFramework;
+    "net6.0": DgFramework;
 }
 
 export type DgProjectRestoreFramework = {
@@ -29,6 +30,7 @@ export type DgProjectRestoreFramework = {
 
 export type DgProjectRestoreFrameworks = {
     "netcoreapp3.1": DgProjectRestoreFramework;
+    "net6.0": DgProjectRestoreFramework
 }
 
 export type DgProjectRestore = {
